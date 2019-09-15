@@ -21,13 +21,20 @@ open class ServerResponse {
     
     let utf8   = s.utf8
     var buffer = channel.allocator.buffer(capacity: utf8.count)
-    buffer.write(bytes: utf8)
+		buffer.writeBytes(utf8)
     
     let part = HTTPServerResponsePart.body(.byteBuffer(buffer))
     
     _ = channel.writeAndFlush(part)
-               .mapIfError(handleError)
-               .map { self.end() }
+			.always({ [weak self] result in
+				switch result {
+				case let .failure(error):
+					self?.handleError(error)
+				default:
+					break
+				}
+				self?.end()
+			})
   }
   
   /// Check whether we already wrote the response header.
@@ -39,12 +46,20 @@ open class ServerResponse {
     let head = HTTPResponseHead(version: .init(major:1, minor:1),
                                 status: status, headers: headers)
     let part = HTTPServerResponsePart.head(head)
-    _ = channel.writeAndFlush(part).mapIfError(handleError)
+    _ = channel.writeAndFlush(part)
+			.always({ [weak self] result in
+			switch result {
+			case let .failure(error):
+				self?.handleError(error)
+				self?.end()
+			default:
+				break
+			}
+		})
   }
   
   func handleError(_ error: Error) {
     print("ERROR:", error)
-    end()
   }
   
   func end() {
@@ -98,12 +113,20 @@ public extension ServerResponse {
     flushHeader()
     
     var buffer = channel.allocator.buffer(capacity: data.count)
-    buffer.write(bytes: data)
+
+    buffer.writeBytes(data)
     let part = HTTPServerResponsePart.body(.byteBuffer(buffer))
 
     _ = channel.writeAndFlush(part)
-               .mapIfError(handleError)
-               .map { self.end() }
+				.always({ [weak self] result in
+								 switch result {
+								 case let .failure(error):
+									 self?.handleError(error)
+								 default:
+									 break
+								 }
+								self?.end()
+		})
   }
 }
 
