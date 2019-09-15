@@ -4,12 +4,32 @@ import Foundation
 import NIO
 import NIOHTTP1
 
+enum BindableHost {
+	case localhost
+	case any
+	case ipv4(String)
+}
+
+extension BindableHost {
+	var host: String {
+		switch self {
+		case .localhost:
+			return "localhost"
+		case .any:
+			// https://en.wikipedia.org/wiki/0.0.0.0
+			return "0.0.0.0"
+		case let .ipv4(ip):
+			return ip
+		}
+	}
+}
+
 open class Express : Router {
   
   override public init() {}
   
   let loopGroup =
-    MultiThreadedEventLoopGroup(numThreads: System.coreCount)
+		MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
   
   open func listen(_ port: Int) {
     let reuseAddrOpt = ChannelOptions.socket(
@@ -18,11 +38,9 @@ open class Express : Router {
     let bootstrap = ServerBootstrap(group: loopGroup)
       .serverChannelOption(ChannelOptions.backlog, value: 256)
       .serverChannelOption(reuseAddrOpt, value: 1)
-      
       .childChannelInitializer { channel in
-        channel.pipeline.addHTTPServerHandlers().then {
-          channel.pipeline.add(handler:
-            HTTPHandler(router: self))
+				channel.pipeline.addHandler(HTTPServerPipelineHandler()).always {_ in
+					channel.pipeline.addHandler(HTTPHandler(router: self))
         }
       }
       
