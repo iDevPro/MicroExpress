@@ -43,6 +43,10 @@ open class Express : Router {
                     switch result {
                     case .success:
                         print("success")
+
+                        channel.pipeline.addHandler(HTTPHandler(router: self))
+
+
                     case let .failure(error):
                         print("error: \(error.localizedDescription)")
                     }
