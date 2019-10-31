@@ -40,7 +40,7 @@ open class Express : Router {
       .serverChannelOption(reuseAddrOpt, value: 1)
       .childChannelInitializer { channel in
 				channel.pipeline.addHandler(HTTPServerPipelineHandler()).always {_ in
-					channel.pipeline.addHandler(HTTPHandler(router: self))
+					_ = channel.pipeline.addHandler(HTTPHandler(router: self))
         }
       }
       

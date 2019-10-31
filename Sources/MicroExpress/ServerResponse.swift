@@ -74,7 +74,7 @@ public extension ServerResponse {
   
   /// A more convenient header accessor. Not correct for
   /// any header.
-  public subscript(name: String) -> String? {
+  subscript(name: String) -> String? {
     set {
       assert(!didWriteHeader, "header is out!")
       if let v = newValue {

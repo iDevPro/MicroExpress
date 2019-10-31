@@ -21,7 +21,7 @@ func querystring(req  : IncomingMessage,
   if let queryItems = URLComponents(string: req.header.uri)?.queryItems {
     req.userInfo[paramDictKey] =
       Dictionary(grouping: queryItems, by: { $0.name })
-        .mapValues { $0.flatMap({ $0.value })
+        .mapValues { $0.compactMap({ $0.value })
 	               .joined(separator: ",") }
   }
   
