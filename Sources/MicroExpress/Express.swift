@@ -39,7 +39,12 @@ open class Express : Router {
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(reuseAddrOpt, value: 1)
             .childChannelInitializer { channel in
-                channel.pipeline.addHandler(HTTPHandler(router: self))
+                channel.pipeline.addHandler(HTTPHandler(router: self)).always({ result in
+                    guard case let .failure(error) = result else {
+                        return
+                    }
+                    print(error.localizedDescription)
+                })
 
 //                channel.pipeline.addHandler(HTTPServerPipelineHandler()).always {_ in
 //                    _ = channel.pipeline.addHandler(HTTPHandler(router: self))
