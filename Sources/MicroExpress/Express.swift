@@ -39,18 +39,8 @@ open class Express : Router {
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(reuseAddrOpt, value: 1)
             .childChannelInitializer { channel in
-                channel.pipeline.addHTTPClientHandlers().always { (result) in
-                    switch result {
-                    case .success:
-                        print("success")
+                channel.pipeline.addHandler(HTTPHandler(router: self))
 
-                        channel.pipeline.addHandler(HTTPHandler(router: self))
-
-
-                    case let .failure(error):
-                        print("error: \(error.localizedDescription)")
-                    }
-                }
 //                channel.pipeline.addHandler(HTTPServerPipelineHandler()).always {_ in
 //                    _ = channel.pipeline.addHandler(HTTPHandler(router: self))
 //                }
