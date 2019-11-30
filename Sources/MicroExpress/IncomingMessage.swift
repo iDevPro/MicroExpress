@@ -3,12 +3,16 @@
 import NIOHTTP1
 
 open class IncomingMessage {
-  
-  public let header   : HTTPRequestHead
-  public var userInfo = [ String : Any ]()
-  
-  init(header: HTTPRequestHead) {
-    self.header = header
-  }
+
+    // MARK: - Properties
+
+    public let header: HTTPRequestHead
+    public var userInfo = [String: Any ]()
+
+    // MARK: - Initialization
+
+    init(header: HTTPRequestHead) {
+        self.header = header
+    }
 }
 
