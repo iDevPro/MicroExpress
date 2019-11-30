@@ -106,7 +106,7 @@ public extension ServerResponse {
     }
     
     // setup JSON headers
-    self["Content-Type"]   = "application/json"
+    self["Content-Type"]   = "application/json; charset=utf-8"
     self["Content-Length"] = "\(data.count)"
     
     // send the headers and the data
