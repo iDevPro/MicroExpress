@@ -4,7 +4,7 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-enum BindableHost {
+public enum BindableHost {
     case localhost
     case any
     case ipv4(String)
@@ -30,7 +30,7 @@ open class Express: Router {
 
     let loopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 
-    open func listen(_ port: Int) {
+    open func listen(host: BindableHost = .localhost,  port: Int) {
 
         let reuseAddrOpt = ChannelOptions.socket(
             SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR
@@ -53,7 +53,7 @@ open class Express: Router {
 
         do {
             let serverChannel = try bootstrap
-                .bind(host: "localhost", port: port)
+                .bind(host: host.host, port: port)
                 .wait()
 
             print("Server running on:", serverChannel.localAddress!)

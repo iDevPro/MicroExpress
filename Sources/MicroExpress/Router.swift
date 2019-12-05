@@ -3,7 +3,7 @@
 open class Router {
     
     /// The sequence of Middleware functions.
-    private var middleware = [ Middleware ]()
+    private var middleware: [Middleware] = []
     
     /// Add another middleware (or many) to the list
     open func use(_ middleware: Middleware...) {
